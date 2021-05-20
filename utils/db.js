@@ -52,6 +52,17 @@ module.exports = {
         })
     },
 
+    getById(id,table_name,connection){
+        return new Promise((resolve, reject) => {
+            const thisConnection = connection || pool;
+            const sql = `SELECT * FROM ${table_name} WHERE id = ${id}`
+            thisConnection.query(sql, function(error, results) {
+                if (error) return reject(error);
+                resolve(results);
+            });
+        })
+    },
+
     add(entity, tableName, connection) {
         return new Promise((resolve, reject) => {
             const thisConnection = connection || pool;
