@@ -11,30 +11,52 @@ module.exports = {
 
     async register (req, res) {
         const connection = await database.getConnection()
-
         connection.beginTransaction(async err => {
             if(err) throw err
             try {
-                const account = await accountModel.getByEmail(req.body.email)
+                const account = await accountModel.singleByEmail(req.body.email)
                 if(account)
                     return res.status(400).json({
                         message: 'Email exist'
                     })
                 
-                const newUser = {
-                        fullname: ''
+                let newUser = {
+                        fullname: '',
+                        gender: ''
                 }
                 newUser = await userModel.add(newUser)
+                
                 if(!newUser) throw 'Can not add user'
 
-                const newAccount = {
+                let newAccount = {
                     email: req.body.email,
                     userid: newUser.id
                 }
-
                 accountModel.setPassword(req.body.password, newAccount)
+                newAccount = await accountModel.add(newAccount)
                 
+                if(newAccount)
+                {
+                    connection.commit(async err => {
+                        connection.release()
+                        const account = await accountModel.singleById(newAccount.id)
+                        if(err) throw err
+                        return res.status(201).json({
+                            message: 'success',
+                            data: account
+                        })
+                    })
+                } else
+                {
+                    return res.status(400).json({
+                        message: 'can not create new account'
+                    })
+                }
 
+            } catch (err){
+                return res.status(500).json({
+                    result: err
+                })
             }
         })
     },

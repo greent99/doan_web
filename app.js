@@ -19,7 +19,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/users', usersRouter);
+app.use('/api/user', usersRouter);
+
+app.get('/err', function (req,res) {
+  throw new Error('Error!')
+})
+
+app.use(function (req,res,next) {
+  res.status(404).json({
+    error_message: 'Endpoint not found!'
+  })
+})
+
+app.use(function (req, res, next) {
+  res.status(500).json({
+    error_message: 'Something broke!'
+  })
+})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

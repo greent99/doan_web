@@ -8,8 +8,7 @@ module.exports = {
     },
 
     async getById(id) {
-        const query = `SELECT * FROM ${table_name} where id = ${id}`
-        const users = await database.query(query, null)
+        const users = await database.getById(id, table_name, null)
         if(users.length === 0)
             return null;
         return users[0]
@@ -18,7 +17,7 @@ module.exports = {
     async add(entity)
     {
         const result = await database.add(entity, table_name)
-        const rows = await database.query(`SELECT * FROM ${table_name} WHERE bucket_id = ${result.insertId}`)
+        const rows = await database.query(`SELECT * FROM ${table_name} WHERE id = ${result.insertId}`)
         if (rows.length === 0)
             return null
         return rows[0]
