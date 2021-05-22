@@ -1,19 +1,17 @@
-const database = require('../utils/db')
+const db = require('../utils/db')
 const table_name = 'accounts'
 const crypto = require('crypto')
 
 module.exports = {
     async singleByEmail(email) {
-        const query = `SELECT * FROM ${table_name} where email = "${email}"`
-        const accounts = await database.query(query, null)
+        const accounts = await db(table_name).where('email', email)
         if(accounts.length === 0)
             return null
         return accounts[0]
     }, 
 
     async singleById(id) {
-        const query = `SELECT id, email, createdat FROM ${table_name} where id = ${id}`
-        const accounts = await database.query(query, null)
+        const accounts = await db(table_name).where('id', id)
         if(accounts.length === 0)
             return null
         return accounts[0]
@@ -33,11 +31,20 @@ module.exports = {
         return false
     },
 
-    async add(entity){
-        const result = await database.add(entity, table_name)
-        const rows = await database.query(`SELECT * FROM ${table_name} WHERE id = ${result.insertId}`)
-        if (rows.length === 0)
-            return null
-        return rows[0]
+    patchRFToken(id, rfToken) {
+        return db('accounts').where('id', id).update('refresh_token', rfToken);
+    },
+
+    async isValidRFToken(id, rfToken) {
+        const list = await db('accounts').where('id', id).andWhere('refresh_token', rfToken);
+        if (list.length > 0) {
+          return true;
+        }
+    
+        return false;
+    },
+
+    async add(account){
+        return db(table_name).insert(account)
     }
 }

@@ -1,32 +1,21 @@
-const database = require('../utils/db')
+const db = require('../utils/db')
 const table_name = 'users'
 
 module.exports = {
     async all() {
-        const query = `SELECT * from ${table_name}`
-        return await database.query(query, null)
+        return db(table_name)
     },
 
     async getById(id) {
-        const users = await database.getById(id, table_name, null)
+        const users = await db(table_name).where('id', id)
         if(users.length === 0)
             return null;
         return users[0]
     },
 
-    async add(entity)
+    async add(user)
     {
-        const result = await database.add(entity, table_name)
-        const rows = await database.query(`SELECT * FROM ${table_name} WHERE id = ${result.insertId}`)
-        if (rows.length === 0)
-            return null
-        return rows[0]
+        return db(table_name).insert(user);
     },
 
-    async del(id)
-    {
-        const condition = {bucket_id : id}
-        let result = await database.delete(condition, table_name)
-        return result
-    }
 }

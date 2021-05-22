@@ -1,0 +1,15 @@
+{
+    "required": [
+      "access_token",
+      "refresh_token"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "email": {
+        "type": "string"
+      },
+      "password": {
+        "type": "string"
+      }
+    }
+  }

@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config();
 
-var usersRouter = require('./routes/user');
+var authRouter = require('./routes/auth.router');
 
 var app = express();
 
@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/user', usersRouter);
+app.use('/api/user', authRouter);
 
 app.get('/err', function (req,res) {
   throw new Error('Error!')
