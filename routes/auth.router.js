@@ -12,4 +12,8 @@ router.post('/login', validator(loginUserSchema), authController.login)
 
 router.post('/refresh', validator(refreshUserSchema), authController.refresh)
 
+router.post('/send-activate-mail', authController.sendMailToActive)
+
+router.get('/activate-email', authController.activateEmail)
+
 module.exports = router; 

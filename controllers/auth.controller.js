@@ -1,9 +1,11 @@
 const userModel = require('../models/user.model')
 const accountModel = require('../models/account.model')
+const statusModel = require('../models/status.model')
 const db = require('../utils/db')
 const jwt = require('jsonwebtoken');
 const randomstring = require('randomstring');
 const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET || 'SECRET_KEY'
+const mailHelper = require('../helpers/sendmail.helper')
 
 
 module.exports = {
@@ -15,9 +17,14 @@ module.exports = {
                 message: 'Email exist'
             })
         
+        const status = await statusModel.getByCode('PENDING')
+        let statusid = status ? status.id : null
         let newUser = {
                 fullname: '',
-                gender: ''
+                gender: '',
+                statuscode: 'PENDING',
+                statusid: statusid
+                
         }
         ids_user = await userModel.add(newUser)
         newUser.id = ids_user[0]
@@ -38,7 +45,7 @@ module.exports = {
         if(newAccount)
         {
             return res.status(201).json({
-                message: 'success',
+                message: 'Account create success',
                 data: newAccount
             })
         }
@@ -69,6 +76,12 @@ module.exports = {
                 authenticated: false
             })
         }
+
+        const user = await userModel.getById(account.userid)
+        if(user.statuscode === 'PENDING')
+            return res.status(400).json({
+                message: "account do not active"
+            })
 
         const payload = {
             userId: account.userid
@@ -105,6 +118,68 @@ module.exports = {
         return res.status(400).json({
           message: 'Refresh token is revoked!'
         });
-    }      
+    },     
+    
+    //send mail to active account
+    async sendMailToActive (req, res) {
+        const email = req.body.email 
+        if (!email)
+            return res.status(400).json({
+                message: 'Please provide email to active'
+        })
+
+        let account = await accountModel.singleByEmail(email)
+        if(account === null)
+            return res.status(400).json({
+                message: 'Email not exist'
+            })
+
+        const user = await userModel.getById(account.userid)
+        if(user.statuscode === 'ACTIVE')
+            return res.status(400).json({
+                message: 'Email actived'
+            })
+        
+        await accountModel.getOtp(req.hostname, req.protocol, account)
+        return res.status(200).json({
+            message: "Email active send, please check!"
+        })
+    },
+
+    async activateEmail(req, res) {
+        const otp = req.query.otp || null
+        const email = req.query.email || null
+        
+        const account = await accountModel.singleByEmail(email)
+        if(!account)
+            return res.status(400).json({
+                message: 'email not exist'
+            })
+
+        const currentDate = new Date()
+        if(account.otp ===  otp && currentDate <= account.otpexpired)
+        {
+            const payload = {
+                userId: account.userid
+            }
+            const opts = {
+                expiresIn: 10 * 60 // seconds
+            }
+            const accessToken = jwt.sign(payload, SECRET_KEY, opts);
+            const refreshToken = randomstring.generate(80);
+            await accountModel.patchRFToken(account.id, refreshToken);
+            await userModel.updateStatus(account.userid, 'ACTIVE')
+            
+            return res.status(200).json({
+                message: "email active successfully",
+                access_token: accessToken,
+                refresh_token: refreshToken
+            })
+        }
+
+        return res.status(400).json({
+            message: 'invalid link active'
+        })
+    }
 
 }
