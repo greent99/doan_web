@@ -142,7 +142,7 @@ module.exports = {
         
         await accountModel.getOtp(req.hostname, req.protocol, account)
         return res.status(200).json({
-            message: "Email active send, please check!"
+            message: "Email active sent, please check!"
         })
     },
 

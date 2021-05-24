@@ -56,7 +56,7 @@ module.exports = {
 		
 		sendMail( account.email, `
             <b>Welcome to Elearning Website: </b>
-            <a href="${hostname}/api/user/activate-email?email=${account.email}&&otp=${otp}">CLICK HERE TO CONFIRM YOUR ACCOUNT</a>
+            <p><a href="http://${hostname}/api/auth/activate-email?email=${account.email}&&otp=${otp}">CLICK HERE TO CONFIRM YOUR ACCOUNT</a></p>
             <p>This link will expired in 7 days</p>`
         );
 		await db(table_name).where('id', account.id).update('otp', otp).update('otpExpired', otpExpired)
