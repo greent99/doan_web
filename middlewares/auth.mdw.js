@@ -2,7 +2,7 @@ const jwtHelper = require('../helpers/jwt.helper')
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "access-token-greent-25-02-1999"
 
 let isAuth = async (req, res,next) => {
-    const tokenFromClient = req.body.token || req.query.token || req.header['x-access-token']
+    const tokenFromClient = req.body.token || req.query.token || req.headers['x-access-token']
 
     if(tokenFromClient)
     {

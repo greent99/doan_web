@@ -203,6 +203,10 @@ DROP INDEX `email` ;
 ALTER TABLE `elearning`.`users`
 CHANGE COLUMN `gender` `gender` VARCHAR(6) NULL DEFAULT 'MALE' ;
 
+ALTER TABLE `elearning`.`accounts` modify column email nvarchar(100)
+insert into statuses(code, name, description) values('PENDING', 'Pending status',null)
+insert into statuses(code, name, description) values('ACTIVE', 'Active status',null)
+
 ALTER TABLE `elearning`.`users`
 DROP FOREIGN KEY `users_statuses_fk`,
 DROP FOREIGN KEY `users_roles_fk`;
