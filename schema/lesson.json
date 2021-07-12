@@ -1,0 +1,18 @@
+{
+    "required": [
+        "courseid",
+        "videourl"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "courseid": {
+            "type": "integer"
+        },
+        "videourl": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        }
+    }
+}

@@ -14,28 +14,35 @@ router.get('/detail/:courseid/:lessonid', async function(req, res) {
     res.json(lesson);
 })
 
-router.get('/video/:courseid/:lessonid', async function(req, res) {
-    const courseid = +req.params.courseid;
-    const lessonid = +req.params.lessonid;
-    const lesson = await lessonModel.getVideoByLesson(courseid, lessonid);
-    if (lesson === null) {
-        return res.status(204).end();
-    }
+const schema = require('../schema/lesson.json');
 
-    res.json(lesson);
+router.post('/', require('../middlewares/validate.mdw')(schema), async function(req, res) {
+    const lesson = req.body;
+    const ids = await lessonModel.add(lesson);
+    lesson.id = ids[0];
+    res.status(201).json(lesson);
 })
 
-// const schema = require('../schemas/film.json');
-// router.post('/', require('../middlewares/validate.mdw')(schema), async function(req, res) {
-//     const film = req.body;
-//     const ids = await filmModel.add(film);
-//     film.film_id = ids[0];
-//     res.status(201).json(film);
-// })
+router.put('/:id', require('../middlewares/validate.mdw')(schema), async function(req, res) {
+    const id = await lessonModel.single(req.params.id);
+    if (id === null) {
+        res.status(400).send({ message: 'id does not exits' });
+    } else {
+        var lesson = req.body;
+        lesson.id = id.id;
+        const ids = await lessonModel.patch(lesson);
+        res.status(201).json(lesson);
+    }
+})
 
-// router.delete('/:id', function(req, res) {
-
-// })
-
+router.delete('/:id', async function(req, res) {
+    const id = await lessonModel.single(req.params.id);
+    if (id === null) {
+        res.status(400).send({ message: 'id does not exits' });
+    } else {
+        const lesson = await lessonModel.del(req.params.id);
+        res.status(204).end();
+    }
+})
 
 module.exports = router;
