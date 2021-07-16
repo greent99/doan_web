@@ -8,7 +8,7 @@ module.exports = {
         const pageSize = req.query.pageSize;
 
         const courses = await courseModel.search(keySearch, pageIndex, pageSize);
-        const totalCourse = await courseModel.totalCourse(keySearch);
+        const totalCourse = await courseModel.getTotal(keySearch);
 
         return res.status(200).json({
             listCourse: courses,

@@ -8,6 +8,7 @@ require('dotenv').config();
 var authRouter = require('./routes/auth.router');
 var userRouter = require('./routes/user.router');
 var lessonRouter = require('./routes/lesson.router');
+var courseRouter = require('./routes/course.router');
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/lesson', lessonRouter);
+app.use('/api/course', courseRouter);
 
 app.get('/err', function(req, res) {
     throw new Error('Error!')
