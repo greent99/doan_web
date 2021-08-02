@@ -46,7 +46,6 @@ CREATE TABLE users (
     fullname VARCHAR(255),
     gender VARCHAR(6) NOT NULL,
     address VARCHAR(100),
-    email VARCHAR(50) UNIQUE,
     phone VARCHAR(20),
     purchasedcount INT DEFAULT 0,
     totalmoneyspend BIGINT DEFAULT 0,
@@ -64,7 +63,8 @@ DROP TABLE IF EXISTS accounts CASCADE;
 CREATE TABLE accounts (
 	id INT AUTO_INCREMENT,
 	userid INT NOT NULL,
-	username VARCHAR(20) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE,
+	username VARCHAR(50) UNIQUE NOT NULL,
 	hash VARCHAR(1000) NOT NULL,
 	salt VARCHAR(100) NOT NULL,
 	createdat DATETIME DEFAULT CURRENT_TIMESTAMP,

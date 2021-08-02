@@ -2,10 +2,9 @@
     "required": [
       "email",
       "username",
-      "password",
-      "phone"
+      "password"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "email": {
         "type": "string",
@@ -20,11 +19,6 @@
       "password": {
         "type": "string",
         "minLength": 3,
-        "maxLength": 30
-      },
-      "phone": {
-        "type": "string",
-        "minLength": 8,
         "maxLength": 30
       }
     }
