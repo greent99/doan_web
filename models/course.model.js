@@ -1,7 +1,6 @@
 const db = require('../utils/db');
 const { all, getById, add } = require('./user.model');
 const table_course = 'courses';
-const table_categories = 'categories';
 const table_user_course = 'user_course';
 
 module.exports = {
@@ -52,5 +51,18 @@ module.exports = {
     //get 10 most registered courses
     async getTop10Most(){
         return db(table_user_course)
-    }
+    },
+
+    //get 3-4 most prominent
+    async getMostProminent()
+    {
+        return db.raw(`SELECT count(*), uc.*, cr.* from categories as cr join courses as c on
+         cr.id = c.categoryId join user_course as uc on c.id = uc.courseid group by cr.id order by
+         count(*) desc limit 4`);
+    },
+    
+     async getCourseByCategoryId(categoryId)
+     {
+         return db(table_course).where('categoryId', categoryId);
+     }
 }
