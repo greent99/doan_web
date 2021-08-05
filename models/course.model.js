@@ -34,6 +34,7 @@ module.exports = {
     },
 
     // query full text search
+    // typeFilter: 0-default, 1-price asc, 2-price desc, 3-have promotion
     async getCountSearch(keySearch, typeFilter)
     {
         return db.raw(`CALL SearchCourseCount('${keySearch}', ${typeFilter})`);
