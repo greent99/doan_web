@@ -1,6 +1,7 @@
 const db = require('../utils/db');
 const { all, getById, add } = require('./user.model');
 const table_course = 'courses';
+const table_categories = 'categories';
 const table_user_course = 'user_course';
 
 module.exports = {
@@ -32,13 +33,15 @@ module.exports = {
             return;
     },
 
-    async getTotal(keySearch) {
-        return db(table_course).where('name', 'like', `%${keySearch}%`).orWhere('author', 'like', `%${keySearch}%`).length;
+    // query full text search
+    async getCountSearch(keySearch, typeFilter)
+    {
+        return db.raw(`CALL SearchCourseCount('${keySearch}', ${typeFilter})`);
     },
 
-    async search(keySearch, pageIndex, pageSize) {
+    async search(keySearch, pageIndex, pageSize, typeFilter) {
         let offset = (pageIndex - 1) * pageSize;
-        return db(table_course).where('name', 'like', `%${keySearch}%`).orWhere('author', 'like', `%${keySearch}%`).limit(pageSize).offset(offset);
+        return db.raw(`CALL SearchCourse('${keySearch}', ${offset},  12, ${typeFilter})`);
     },
 
     async getTop10NewCourse(){

@@ -6,13 +6,14 @@ module.exports = {
         const keySearch = req.query.keySearch;
         const pageIndex = req.query.pageIndex;
         const pageSize = req.query.pageSize;
+        const typeFilter = req.query.typeFilter;
 
-        const courses = await courseModel.search(keySearch, pageIndex, pageSize);
-        const totalCourse = await courseModel.getTotal(keySearch);
+        const courses = await courseModel.search(keySearch, pageIndex, pageSize, typeFilter);
+        const totalRow = await courseModel.getCountSearch(keySearch, typeFilter);
 
         return res.status(200).json({
-            listCourse: courses,
-            total: totalCourse
+            listCourse: courses[0][0],
+            total: totalRow[0][0][0].count
         });
     }
 }
