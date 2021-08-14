@@ -32,13 +32,16 @@ module.exports = {
             return;
     },
 
-    async getTotal(keySearch) {
-        return db(table_course).where('name', 'like', `%${keySearch}%`).orWhere('author', 'like', `%${keySearch}%`).length;
+    // query full text search
+    // typeFilter: 0-default, 1-price asc, 2-price desc, 3-have promotion
+    async getCountSearch(keySearch, typeFilter)
+    {
+        return db.raw(`CALL SearchCourseCount('${keySearch}', ${typeFilter})`);
     },
 
-    async search(keySearch, pageIndex, pageSize) {
+    async search(keySearch, pageIndex, pageSize, typeFilter) {
         let offset = (pageIndex - 1) * pageSize;
-        return db(table_course).where('name', 'like', `%${keySearch}%`).orWhere('author', 'like', `%${keySearch}%`).limit(pageSize).offset(offset);
+        return db.raw(`CALL SearchCourse('${keySearch}', ${offset},  12, ${typeFilter})`);
     },
 
     async getTop10NewCourse(){
@@ -48,5 +51,18 @@ module.exports = {
     //get 10 most registered courses
     async getTop10Most(){
         return db(table_user_course)
-    }
+    },
+
+    //get 3-4 most prominent
+    async getMostProminent()
+    {
+        return db.raw(`SELECT count(*), uc.*, cr.* from categories as cr join courses as c on
+         cr.id = c.categoryId join user_course as uc on c.id = uc.courseid group by cr.id order by
+         count(*) desc limit 4`);
+    },
+    
+     async getCourseByCategoryId(categoryId)
+     {
+         return db(table_course).where('categoryId', categoryId);
+     }
 }
