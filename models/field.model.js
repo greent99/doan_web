@@ -1,6 +1,5 @@
 const db = require('../utils/db');
-const { all, getById, add } = require('./user.model');
-const table_name="categories"
+const table_name="fields"
 
 module.exports = {
     async all(page, pageSize) {
@@ -8,7 +7,7 @@ module.exports = {
         return db(table_name).limit(pageSize).offset(offset)
     },
 
-    async getSizeAll (pageSize) {
+    async getSizeAll () {
         return db(table_name)
     },
 
@@ -19,16 +18,16 @@ module.exports = {
         return categories[0];
     },
 
-    async add(category) {
-        return db(table_name).insert(category).returning('id')
+    async add(field) {
+        return db(table_name).insert(field).returning('id')
     },
 
     async delete(id) {
         return db(table_name).where('id', id).del();
     },
 
-    async update(id, category) {
-        await db(table_name).where('id', id).update(category)
+    async update(id, field) {
+        await db(table_name).where('id', id).update(field)
     },
 
 }

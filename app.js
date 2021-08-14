@@ -11,6 +11,7 @@ var userRouter = require('./routes/user.router');
 var lessonRouter = require('./routes/lesson.router');
 var courseRouter = require('./routes/course.router');
 var categoryRouter = require('./routes/category.router')
+var fieldRouter = require('./routes/field.router')
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/user', userRouter);
 app.use('/api/lesson', lessonRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/categories', categoryRouter);
+app.use('/api/fields', fieldRouter);
 
 app.get('/err', function(req, res) {
     throw new Error('Error!')

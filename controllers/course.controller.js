@@ -1,5 +1,6 @@
 const { search } = require('../models/course.model');
 const courseModel = require('../models/course.model');
+const { create } = require('./category.controller');
 
 module.exports = {
     async search(req, res) {
@@ -15,5 +16,9 @@ module.exports = {
             listCourse: courses[0][0],
             total: totalRow[0][0][0].count
         });
+    },
+
+    async create(req, res) {
+        
     }
 }
