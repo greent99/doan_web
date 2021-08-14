@@ -1,33 +1,34 @@
 const db = require('../utils/db');
-const { all } = require('./status.model');
-const tabale_category = 'categories';
+const { all, getById, add } = require('./user.model');
+const table_name="categories"
 
 module.exports = {
     async all() {
-        return db(tabale_category);
+        return db(table_name);
     },
 
     async getById(id) {
-        const courses = await db(tabale_category).where('id', id)
-        if (courses.length === 0)
+        const categories = await db(table_name).where('id', id)
+        if (categories.length === 0)
             return null
-        return courses[0];
+        return categories[0];
     },
 
     async add(category) {
-        return db(tabale_category).insert(category);
+        return db(table_name).insert(category).returning('id')
     },
 
     async del(id) {
         const category = await getById(id);
         if (category.length === 0)
             return;
-        return db(tabale_category).where('id', id).del();
+        return db(table_name).where('id', id).del();
     },
 
-    async update(category) {
-        const tmpCategory = await getById(category.id);
-        if (tmpCategory.length === 0)
+    async update(course) {
+        const tmpCourse = await getById(course.id);
+        if (tmpCourse.length === 0)
             return;
-    }
+    },
+
 }

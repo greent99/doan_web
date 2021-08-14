@@ -27,6 +27,10 @@ module.exports = {
         if(status)
             await db(table_name).where('id', id).update('statuscode', code).update('statusid', status.id)
         return true
-    }
+    },
 
+    async delete(id)
+    {
+        return db(table_name).where('id', id).del();
+    }
 }

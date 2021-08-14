@@ -64,7 +64,7 @@ CREATE TABLE accounts (
 	id INT AUTO_INCREMENT,
 	userid INT NOT NULL,
     email VARCHAR(255) UNIQUE,
-	username VARCHAR(50) UNIQUE NOT NULL,
+	username VARCHAR(50) NOT NULL,
 	hash VARCHAR(1000) NOT NULL,
 	salt VARCHAR(100) NOT NULL,
 	createdat DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -272,3 +272,18 @@ CREATE TABLE carts_courses (
     CONSTRAINT carts_courses_fk_carts FOREIGN KEY (cartid) REFERENCES carts (id),
     CONSTRAINT carts_courses_fk_courses FOREIGN KEY (courseid) REFERENCES courses (id)
 );
+
+alter table accounts add refresh_token varchar(255)
+
+alter table accounts add userType varchar(255)
+alter table accounts add gender nvarchar(255)
+alter table accounts add phone varchar(255)
+alter table accounts drop column statusid
+
+alter table users drop column rolecode;
+alter table users drop constraint users_roles_fk;
+alter table users drop column roleid;
+alter table users drop column gender;
+alter table users drop column phone;
+alter table users drop constraint users_statuses_fk;
+alter table users drop column statusid;
