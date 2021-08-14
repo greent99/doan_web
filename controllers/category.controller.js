@@ -1,5 +1,5 @@
 const userModel = require('../models/user.model')
-const accountModel = require('../models/account.model')
+const categoryModel = require('../models/category.model')
 
 module.exports = {
     async profile (req, res) {
@@ -9,50 +9,26 @@ module.exports = {
     },
 
     async getAll(req, res) {
-        const page = req.query.page
-        const data = await accountModel.getAll(page)
-        const totalPage = data.length % 10 == 0 ? data.length / 10 : ((data.length /10) + 1)
-        return res.status(200).json({
-            dataRows:  data,
-            totalItems: data.length,
-            totalPages: totalPage
+        const categories = await categoryModel.all()
 
+        return res.status(200).json({
+            category: categories
         })
     },
 
     async create(req, res)
     {
-        const {email, password, username, gender, userType, fullname } = req.body
-        console.log(password)
-        const accountIns = await accountModel.singleByEmail(email)
-        if(accountIns)
-            return res.status(400).json({
-                message: "Email exist"
-            })
-
-        let newUser = {
-            fullname: fullname,
-            statuscode: 'AVAILABLE',
-        }
-        userId = await userModel.add(newUser)
-        const account = {
-            email,
-            userId: userId[0],
-            username,
-            gender,
-            userType
-        }
-        await accountModel.setPassword(password, account)
-        const id = await accountModel.add(account)
+        const {name} = req.body
+        id = await categoryModel.add({name})
+        console.log(id)
         if(id)
         {
-            account.id = id
+            const category = await categoryModel.getById(id)
             return res.status(200).json({
                 message: "Add success",
-                user: account
+                category: category
             })
         }
-
         return res.status(400).json({
             message: "Something error"
         })

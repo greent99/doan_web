@@ -21,10 +21,7 @@ module.exports = {
         let statusid = status ? status.id : null
         let newUser = {
                 fullname: '',
-                gender: '',
                 statuscode: 'PENDING',
-                statusid: statusid
-                
         }
         ids_user = await userModel.add(newUser)
         newUser.id = ids_user[0]
@@ -78,17 +75,17 @@ module.exports = {
             })
         }
 
-        const user = await userModel.getById(account.userid)
-        if(user.statuscode === 'PENDING')
+        if(account.statuscode !== 'AVAILABLE')
             return res.status(400).json({
                 message: "account do not active"
             })
 
         const payload = {
-            userId: account.userid
+            //userId: account.userid,
+            accountId: account.id
         }
         const opts = {
-            expiresIn: 10 * 60 // seconds
+            expiresIn: 10 * 60 // seconds 
         }
         const accessToken = jwt.sign(payload, SECRET_KEY, opts);
         const refreshToken = randomstring.generate(80);
@@ -97,18 +94,19 @@ module.exports = {
         return res.status(200).json({
             authenticated: true,
             access_token: accessToken,
-            refresh_token: refreshToken
+            refresh_token: refreshToken,
+            user: {username: account.username, email: account.email, userType: account.userType}
         })
     },
 
     //refresh token
     async refresh (req, res) {
         const { access_token, refresh_token } = req.body;
-        const { userId } = jwt.verify(access_token, SECRET_KEY, {
+        const { accountId } = jwt.verify(access_token, SECRET_KEY, {
           ignoreExpiration: true
         });
       
-        const ret = await accountModel.isValidRFToken(userId, refresh_token);
+        const ret = await accountModel.isValidRFToken(accountId, refresh_token);
         if (ret === true) {
           const newAccessToken = jwt.sign({ userId }, SECRET_KEY, { expiresIn: 60 * 10 });
           return res.json({

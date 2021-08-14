@@ -5,6 +5,12 @@ const randomstring = require('randomstring');
 const sendMail = require('../helpers/sendmail.helper')
 
 module.exports = {
+    async getAll (page) {
+        let offset = (page - 1) * 10;
+        const users = await db(table_name).limit(10).offset(offset)
+        return users
+    },
+
     async singleByEmail(email) {
         const accounts = await db(table_name).where('email', email)
         if(accounts.length === 0)
@@ -13,7 +19,8 @@ module.exports = {
     }, 
 
     async singleById(id) {
-        const accounts = await db(table_name).where('id', id)
+        const accounts = await db(table_name).join('users', 'accounts.userId', 'users.id').where('accounts.id', id)
+                        .select('accounts.id', 'accounts.email', 'accounts.username', 'accounts.gender', 'accounts.userType', 'accounts.statuscode', 'accounts.userid', 'users.fullname', 'users.address')
         if(accounts.length === 0)
             return null
         return accounts[0]
@@ -63,6 +70,23 @@ module.exports = {
 	},
 
     async add(account){
-        return db(table_name).insert(account)
+        const [userId] = await db(table_name).insert(account).returning('id')
+        return userId
+    },
+
+    async update (id, data) {
+        const {gender, username, fullname} = data
+        const accounts = await db(table_name).where('id', id)
+        if(accounts.length === 0)
+            return null;
+
+        await db('users').where('id', accounts[0].userid).update({fullname})
+        await db(table_name).where('id', id).update({gender, username})
+        return true
+    },
+
+    async delete(id)
+    {
+        return db(table_name).where('id', id).del()
     }
 }
