@@ -19,7 +19,10 @@ app.use(cors())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'resources')));
 app.set('view engine', 'jade');
+
+global.__basedir = __dirname;
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -30,7 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/lesson', lessonRouter);
-app.use('/api/course', courseRouter);
+app.use('/api/courses', courseRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/fields', fieldRouter);
 

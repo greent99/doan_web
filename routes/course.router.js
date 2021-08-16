@@ -4,6 +4,10 @@ const courseController = require('../controllers/course.controller');
 
 router.get('/search', courseController.search);
 
-router.post('/create', courseController.create);
+router.get('/', courseController.getAll)
+
+router.post('/', courseController.create);
+
+router.get('/:id', courseController.getById);
 
 module.exports = router; 

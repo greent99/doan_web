@@ -106,5 +106,16 @@ module.exports = {
         return res.status(400).json({
             message: "User is not exist"
         })
+    },
+
+    async getByRole(req, res)
+    {
+        const type = req.params.type
+        const users = await userModel.getByRole(type)
+
+        return res.status(200).json({
+            message: 'success',
+            users
+        })
     }
 }

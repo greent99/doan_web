@@ -1,11 +1,17 @@
 const db = require('../utils/db');
-const { all, getById, add } = require('./user.model');
 const table_course = 'courses';
 const table_user_course = 'user_course';
 
 module.exports = {
-    async all() {
-        return db(table_course);
+    async all(page, pageSize) {
+        const offset = (page - 1) * pageSize
+        return db(table_course).join('users', 'courses.author', 'users.id').join('fields', 'courses.field', 'fields.id')
+            .select('courses.*', 'users.fullname as author_name', 'fields.name as field_name')
+            .limit(pageSize).offset(offset)
+    },
+
+    async getSizeAll () {
+        return db(table_course)
     },
 
     async getById(id) {
@@ -64,5 +70,9 @@ module.exports = {
      async getCourseByCategoryId(categoryId)
      {
          return db(table_course).where('categoryId', categoryId);
+     },
+
+    async create(course){
+        return db(table_name).insert(course).returning('id')
      }
 }

@@ -14,6 +14,11 @@ module.exports = {
         return users[0]
     },
 
+    async getByRole(role) {
+        return db(table_name).join('accounts', 'users.id', 'accounts.userid').where('accounts.userType', role)
+            .select('users.fullname', 'users.id')
+    },
+
     async add(user)
     {
         return db(table_name).insert(user);

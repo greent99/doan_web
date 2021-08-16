@@ -16,4 +16,6 @@ router.put('/:id', userController.update)
 
 router.delete('/:id', userController.delete)
 
+router.get('/getByRole/:type', userController.getByRole)
+
 module.exports = router;

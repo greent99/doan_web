@@ -8,7 +8,6 @@ module.exports = {
         const totalItems = items.length
         const totalPages =  Math.ceil(totalItems / pageSize)
         const fields = await fieldModel.all(page, pageSize)
-        console.log('?')
 
         return res.status(200).json({
             dataRows: fields,
