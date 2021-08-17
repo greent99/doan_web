@@ -18,6 +18,11 @@ module.exports = {
         return accounts[0]
     }, 
 
+    async getUserById (id) {
+        return db(table_name).join('users', 'accounts.userid', 'users.id').where('accounts.id', id)
+            .select('accounts.*', 'users.id as userid')
+    },
+
     async singleById(id) {
         const accounts = await db(table_name).join('users', 'accounts.userId', 'users.id').where('accounts.id', id)
                         .select('accounts.id', 'accounts.email', 'accounts.username', 'accounts.gender', 'accounts.userType', 'accounts.statuscode', 'accounts.userid', 'users.fullname', 'users.address')

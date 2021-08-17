@@ -1,5 +1,6 @@
 const userModel = require('../models/user.model')
 const accountModel = require('../models/account.model')
+const courseModel = require('../models/course.model')
 
 module.exports = {
     async profile (req, res) {
@@ -116,6 +117,27 @@ module.exports = {
         return res.status(200).json({
             message: 'success',
             users
+        })
+    },
+
+    async enrollCourse (req, res) {
+        const userid = req.params.id
+        const courseid = req.body.courseid
+        const course = await courseModel.getById(courseid)
+        if(course){
+            const result = await userModel.enrollCourse(userid, courseid)
+            if(result)
+                return res.status(200).json({
+                    message: 'Success',
+                })
+            else
+                return res.status(400).json({
+                    message: 'Course is exist in list',
+                })
+        }
+
+        return res.status(400).json({
+            message: "Course is not exist"
         })
     }
 }

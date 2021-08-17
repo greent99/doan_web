@@ -152,12 +152,13 @@ CREATE TABLE user_course (
 
 DROP TABLE IF EXISTS ratings CASCADE;
 CREATE TABLE ratings (
+	id INT AUTO_INCREMENT,
 	userid INT NOT NULL,
 	courseid INT NOT NULL,
 	createddat DATETIME DEFAULT CURRENT_TIMESTAMP,
 	point INT CHECK (point <= 5),
 	comment TEXT,
-	CONSTRAINT ratings_pk PRIMARY KEY (userid, courseid),
+	CONSTRAINT ratings_pk PRIMARY KEY (id),
     CONSTRAINT ratings_courses_fk FOREIGN KEY (courseid) REFERENCES courses (id),
     CONSTRAINT ratings_users_fk FOREIGN KEY (userid) REFERENCES users (id)
 );

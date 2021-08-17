@@ -37,5 +37,16 @@ module.exports = {
     async delete(id)
     {
         return db(table_name).where('id', id).del();
+    },
+
+    async enrollCourse (userid, courseid) {
+        const user_course = await db('user_course').where('userid', userid).where('courseid', courseid)
+        if(user_course.length == 0)
+            return await db('user_course').insert({
+                courseid,
+                userid,
+                isinwatchlist: false
+            })
+        return false
     }
 }

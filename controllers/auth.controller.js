@@ -80,6 +80,9 @@ module.exports = {
                 message: "account do not active"
             })
 
+        const users = await accountModel.getUserById(account.id)
+        const userIns = users[0]
+
         const payload = {
             //userId: account.userid,
             accountId: account.id
@@ -95,7 +98,7 @@ module.exports = {
             authenticated: true,
             access_token: accessToken,
             refresh_token: refreshToken,
-            user: {username: account.username, email: account.email, userType: account.userType}
+            user: {username: account.username, email: account.email, userType: account.userType, userid: userIns.userid}
         })
     },
 

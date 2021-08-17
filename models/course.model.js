@@ -1,6 +1,9 @@
+
 const db = require('../utils/db');
 const table_course = 'courses';
 const table_user_course = 'user_course';
+const table_ratings = 'ratings'
+const table_lessons = 'lessons'
 
 module.exports = {
     async all(page, pageSize) {
@@ -15,7 +18,8 @@ module.exports = {
     },
 
     async getById(id) {
-        const courses = await db(table_course).where('id', id)
+        const courses = await db(table_course).where('courses.id', id).join('users', 'courses.author', 'users.id').join('fields', 'courses.field', 'fields.id')
+            .select('courses.*', 'users.fullname as author_name', 'fields.name as field_name')
         if (courses.length === 0)
             return null
         return courses[0];
@@ -40,14 +44,32 @@ module.exports = {
 
     // query full text search
     // typeFilter: 0-default, 1-price asc, 2-price desc, 3-have promotion
-    async getCountSearch(keySearch, typeFilter)
+    async getCountSearch(keySearch, typeFilter, category)
     {
-        return db.raw(`CALL SearchCourseCount('${keySearch}', ${typeFilter})`);
+        let query = db(table_course)
+        if(keySearch)
+            query = query.where('name', 'like', `%${keySearch}%`)
+        if(category && category != 'all')
+            query =  query.where('field', category);
+        
+
+        return query
     },
 
-    async search(keySearch, pageIndex, pageSize, typeFilter) {
+    async search(keySearch, pageIndex, pageSize, typeFilter, category) {
         let offset = (pageIndex - 1) * pageSize;
-        return db.raw(`CALL SearchCourse('${keySearch}', ${offset},  12, ${typeFilter})`);
+        let query = db(table_course)
+        if(keySearch)
+            query = query.where('name', 'like', `%${keySearch}%`)
+        if(category && category != 'all')
+            query =  query.where('field', category);
+        if(typeFilter === 'priceAsc')
+            query.orderBy('price', 'asc')
+        if(typeFilter === 'priceDesc')
+            query.orderBy('price', 'desc')
+        query = query.limit(pageSize).offset(offset);
+
+        return query
     },
 
     async getTop10NewCourse(){
@@ -74,5 +96,32 @@ module.exports = {
 
     async create(course){
         return db(table_name).insert(course).returning('id')
+     },
+
+     async getReviews(id) {
+        return db(table_ratings).where('courseid', id).orderBy('createddat', 'desc')
+     },
+
+     async addReview(id, review)
+     {
+         review.courseid = id
+         return await db(table_ratings).insert(review).returning('id')
+     },
+
+     async addToWatchList (id, userid) {
+        const user_course = await db('user_course').where('userid', userid).where('courseid', id)
+        if(user_course.length > 0)
+            await db('user_course').where('userid', userid).where('courseid', id)
+                .update({isinwatchlist: true})
+        else
+            await db('user_course').insert({
+                courseid: id,
+                userid,
+                isinwatchlist: true
+            })
+     },
+
+     async addLesson (courseid, lesson) {
+        return await db(table_lessons).insert(lesson).returning('id')
      }
 }

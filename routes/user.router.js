@@ -10,6 +10,8 @@ router.get('/', userController.getAll);
 
 router.post('/', userController.create)
 
+router.post('/:id/enrollCourse', userController.enrollCourse)
+
 router.get('/:id', userController.getById);
 
 router.put('/:id', userController.update)
