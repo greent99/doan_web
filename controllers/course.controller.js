@@ -122,15 +122,15 @@ module.exports = {
     async addLesson (req, res) {
         const id = req.params.id
         const course = await courseModel.getById(id)
-        const {description, videourl} = req.body
+        const {description, videourl, title} = req.body
 
         if(course)
         {
-            const ids = await courseModel.addLesson(courseid, {
-                description, videourl, courseid
+            const ids = await courseModel.addLesson(id, {
+                description, videourl, courseid: id, title
             })
-            const id = ids[0]
-            if(id)
+            const id_after_add = ids[0]
+            if(id_after_add)
                 return res.status(200).json({
                     message: 'Success'
                 })
@@ -142,6 +142,85 @@ module.exports = {
 
         return res.status(400).json({
             message: "Course is not exist"
+        })
+    },
+
+    async getLesson (req, res) {
+        const id = req.params.id
+        const course = await courseModel.getById(id)
+
+        if(course)
+        {
+            const lessons = await courseModel.getLesson(id)
+            return res.status(200).json({
+                message: 'Success',
+                lessons
+            })
+        }
+
+        return res.status(400).json({
+            message: "Course is not exist"
+        })
+    },
+
+    async checkUserInCourse (req, res) {
+        const id = req.params.id
+        const course = await courseModel.getById(id)
+        const userid = req.body.userid
+
+        if(course)
+        {
+            const result = await courseModel.checkUserInCourse(id, userid)
+            console.log(result)
+            if(result.length > 0)
+                return res.status(200).json({
+                    status: true
+                })
+            return res.status(200).json({
+                status: false
+            })
+        }
+
+        return res.status(400).json({
+            message: "Course is not exist"
+        })
+    },
+
+    async increaseView (req, res) {
+        const id = req.params.id
+        const course = await courseModel.getById(id)
+
+        if(course)
+        {
+            await courseModel.increaseView(id)
+
+            return res.status(200).json({
+                message: "success"
+            })
+        }
+        return res.status(400).json({
+            message: "Course is not exist"
+        })
+
+    },
+
+    async getTopPopular (req, res) {
+        const top = req.query.top || 10
+
+        const courses = await courseModel.getTopPopular(top)
+
+        return res.status(200).json({
+            dataRows: courses
+        })
+    },
+
+    async getTopNewest (req, res) {
+        const top = req.query.top || 10
+
+        const courses = await courseModel.getTopNewCourse(top)
+
+        return res.status(200).json({
+            dataRows: courses
         })
     }
 }

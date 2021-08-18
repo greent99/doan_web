@@ -66,6 +66,8 @@ module.exports = {
     },
 
     async getListTeacherCourse(userid) {
-        return db('courses').where('author', userid).where('statuscode', 'Available')
+        return db('courses').where('author', userid).where('courses.statuscode', 'Available')
+        .join('users', `courses.author`, 'users.id')
+        .select('courses.*', 'users.fullname')
     }
 }

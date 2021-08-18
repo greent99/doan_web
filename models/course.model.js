@@ -72,13 +72,23 @@ module.exports = {
         return query
     },
 
-    async getTop10NewCourse(){
-        return db(table_course).orderBy('uploaddate').limit(10);
+    async getTopNewCourse(top){
+        return db(table_course).orderBy('uploaddate', 'desc')
+            .join('users', `${table_course}.author`, 'users.id')
+            .limit(top)
+            .select('courses.*', 'users.fullname as author_name' )
     },
 
     //get 10 most registered courses
     async getTop10Most(){
         return db(table_user_course)
+    },
+
+    async getTopPopular(top){
+        return db(table_course).orderBy('viewscount', 'desc').
+            join('users', `${table_course}.author`, 'users.id')
+            .limit(top)
+            .select('courses.*', 'users.fullname as author_name' )
     },
 
     //get 3-4 most prominent
@@ -123,5 +133,23 @@ module.exports = {
 
      async addLesson (courseid, lesson) {
         return await db(table_lessons).insert(lesson).returning('id')
+     },
+
+     async getLesson (courseid) {
+         return db(table_lessons).where('courseid', courseid)
+     },
+
+     async checkUserInCourse (courseid, userid)
+     {
+         return db(table_user_course).where('userid', userid).where('courseid', courseid)
+     },
+
+     async increaseView(courseid) {
+         const course = await this.getById(courseid)
+         console.log(course)
+         const totalView = course.viewscount + 1
+         return db(table_course).where('id', courseid).update({
+            viewscount: totalView
+         })
      }
 }
