@@ -20,4 +20,10 @@ router.delete('/:id', userController.delete)
 
 router.get('/getByRole/:type', userController.getByRole)
 
+router.get('/:id/getWatchList', userController.getWatchList)
+
+router.get('/:id/getEnrollList', userController.getEnrollList)
+
+router.get('/:id/getListTeacherCourse', userController.getListTeacherCourse)
+
 module.exports = router;

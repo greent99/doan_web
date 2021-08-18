@@ -139,5 +139,38 @@ module.exports = {
         return res.status(400).json({
             message: "Course is not exist"
         })
+    },
+
+    async getWatchList (req, res) {
+        const userid = req.params.id
+        
+        const courses = await userModel.getWatchList(userid)
+
+        return res.status(200).json({
+            message: 'success',
+            courses
+        })
+    },
+
+    async getEnrollList (req, res) {
+        const userid = req.params.id
+        
+        const courses = await userModel.getEnrollList(userid)
+
+        return res.status(200).json({
+            message: 'success',
+            courses
+        })
+    },
+
+    async getListTeacherCourse (req, res) {
+        const userid = req.params.id
+
+        const courses = await userModel.getListTeacherCourse(userid)
+
+        return res.status(200).json({
+            message: 'success',
+            courses
+        })
     }
 }

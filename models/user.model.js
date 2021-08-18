@@ -1,6 +1,7 @@
 const db = require('../utils/db')
 const statusModel = require('../models/status.model')
 const table_name = 'users'
+const table_user_course = 'user_course'
 
 module.exports = {
     async all() {
@@ -48,5 +49,23 @@ module.exports = {
                 isinwatchlist: false
             })
         return false
+    },
+
+    async getWatchList (userid) {
+        return db(table_user_course).join('courses', `${table_user_course}.courseid`, 'courses.id')
+        .join('users', `courses.author`, 'users.id')
+        .where('userid', userid).where('isinwatchlist', true)
+        .select(`${table_user_course}.*`, 'courses.*', 'users.fullname')
+    },
+
+    async getEnrollList (userid) {
+        return db(table_user_course).join('courses', `${table_user_course}.courseid`, 'courses.id')
+        .join('users', `courses.author`, 'users.id')
+        .where('userid', userid)
+        .select(`${table_user_course}.*`, 'courses.*', 'users.fullname')
+    },
+
+    async getListTeacherCourse(userid) {
+        return db('courses').where('author', userid).where('statuscode', 'Available')
     }
 }
