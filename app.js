@@ -13,6 +13,7 @@ var courseRouter = require('./routes/course.router');
 var categoryRouter = require('./routes/category.router')
 var fieldRouter = require('./routes/field.router')
 var chatbotRouter = require('./routes/chatbot.route')
+var indexRouter = require('./routes/index.router')
 
 var app = express();
 
@@ -22,6 +23,8 @@ app.use(cors())
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'resources')));
 app.set('view engine', 'jade');
+
+app.use('/', indexRouter)
 
 global.__basedir = __dirname;
 
@@ -38,6 +41,8 @@ app.use('/api/courses', courseRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/fields', fieldRouter);
 app.use('/api/chatbot', chatbotRouter);
+
+
 
 app.get('/err', function(req, res) {
     throw new Error('Error!')
