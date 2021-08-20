@@ -81,6 +81,7 @@ module.exports = {
     },
     // Sends response messages via the Send API
     callSendAPI(sender_psid, response) {
+        console.log(process.env.PAGE_ACCESS_TOKEN)
         // Construct the message body
         let request_body = {
             "recipient": {
