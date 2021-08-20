@@ -1,4 +1,4 @@
-import request from 'request'
+const request =  require('request')
 module.exports = {
     async postMessage(req, res) {
         // Parse the request body from the POST
