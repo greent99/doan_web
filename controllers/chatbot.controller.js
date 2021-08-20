@@ -1,4 +1,4 @@
-const request =  require('request')
+const request = require('request')
 module.exports = {
     async postMessage(req, res) {
         // Parse the request body from the POST
@@ -86,18 +86,18 @@ module.exports = {
             "recipient": {
                 "id": sender_psid
             },
-            "message": { "text": response }
-        };
+            "message": response
+        }
 
         // Send the HTTP request to the Messenger Platform
         request({
-            "uri": "https://graph.facebook.com/v7.0/me/messages",
+            "uri": "https://graph.facebook.com/v2.6/me/messages",
             "qs": { "access_token": process.env.PAGE_ACCESS_TOKEN },
             "method": "POST",
             "json": request_body
         }, (err, res, body) => {
             if (!err) {
-                console.log('message sent!');
+                console.log('message sent!')
             } else {
                 console.error("Unable to send message:" + err);
             }
@@ -113,39 +113,42 @@ module.exports = {
     },
 
     handleMessage(sender_psid, message) {
-        //handle message for react, like press like button
-        // id like button: sticker_id 369239263222822
+        let response;
 
-        if (message && message.attachments && message.attachments[0].payload) {
-            callSendAPI(sender_psid, "Thank you for watching my video !!!");
-            callSendAPIWithTemplate(sender_psid);
-            return;
-        }
-
-        let entitiesArr = ["wit$greetings", "wit$thanks", "wit$bye"];
-        let entityChosen = "";
-        entitiesArr.forEach((name) => {
-            let entity = firstTrait(message.nlp, name);
-            if (entity && entity.confidence > 0.8) {
-                entityChosen = name;
+        // Checks if the message contains text
+        if (received_message.text) {
+            // Create the payload for a basic text message, which
+            // will be added to the body of our request to the Send API
+            response = {
+                "text": `You sent the message: "${received_message.text}". Now send me an attachment!`
             }
-        });
-
-        if (entityChosen === "") {
-            //default
-            callSendAPI(sender_psid, `The bot is needed more training, try to say "thanks a lot" or "hi" to the bot`);
-        } else {
-            if (entityChosen === "wit$greetings") {
-                //send greetings message
-                callSendAPI(sender_psid, 'Hi there! This bot is created by Hary Pham. Watch more videos on HaryPhamDev Channel!');
-            }
-            if (entityChosen === "wit$thanks") {
-                //send thanks message
-                callSendAPI(sender_psid, `You 're welcome!`);
-            }
-            if (entityChosen === "wit$bye") {
-                //send bye message
-                callSendAPI(sender_psid, 'bye-bye!');
+        } else if (received_message.attachments) {
+            // Get the URL of the message attachment
+            let attachment_url = received_message.attachments[0].payload.url;
+            response = {
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "generic",
+                        "elements": [{
+                            "title": "Is this the right picture?",
+                            "subtitle": "Tap a button to answer.",
+                            "image_url": attachment_url,
+                            "buttons": [
+                                {
+                                    "type": "postback",
+                                    "title": "Yes!",
+                                    "payload": "yes",
+                                },
+                                {
+                                    "type": "postback",
+                                    "title": "No!",
+                                    "payload": "no",
+                                }
+                            ],
+                        }]
+                    }
+                }
             }
         }
     },
