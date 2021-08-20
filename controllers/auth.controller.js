@@ -34,7 +34,8 @@ module.exports = {
         let newAccount = {
             username: req.body.username,
             email: req.body.email,
-            userid: newUser.id
+            userid: newUser.id,
+            userType: 'Student'
         }
         accountModel.setPassword(req.body.password, newAccount)
         ids_account = await accountModel.add(newAccount)

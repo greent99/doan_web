@@ -12,6 +12,7 @@ var lessonRouter = require('./routes/lesson.router');
 var courseRouter = require('./routes/course.router');
 var categoryRouter = require('./routes/category.router')
 var fieldRouter = require('./routes/field.router')
+var chatbotRouter = require('./routes/chatbot.route')
 
 var app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/lesson', lessonRouter);
 app.use('/api/courses', courseRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/fields', fieldRouter);
+app.use('/api/chatbot', chatbotRouter);
 
 app.get('/err', function(req, res) {
     throw new Error('Error!')

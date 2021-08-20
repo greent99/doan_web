@@ -4,7 +4,10 @@ const table_name="fields"
 module.exports = {
     async all(page, pageSize) {
         const offset = (page - 1) * pageSize
-        return db(table_name).limit(pageSize).offset(offset)
+        return db(table_name)
+        .join('categories', 'fields.categoryid', 'categories.id')
+        .limit(pageSize).offset(offset)
+        .select('fields.*', 'categories.name as category_name')
     },
 
     async getSizeAll () {

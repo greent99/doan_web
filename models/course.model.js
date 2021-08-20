@@ -60,14 +60,19 @@ module.exports = {
         let offset = (pageIndex - 1) * pageSize;
         let query = db(table_course)
         if(keySearch)
-            query = query.where('name', 'like', `%${keySearch}%`)
+            query = query.where('courses.name', 'like', `%${keySearch}%`)
         if(category && category != 'all')
             query =  query.where('field', category);
         if(typeFilter === 'priceAsc')
             query.orderBy('price', 'asc')
         if(typeFilter === 'priceDesc')
             query.orderBy('price', 'desc')
-        query = query.limit(pageSize).offset(offset);
+        query = query
+            .join('users', `courses.author`, 'users.id')
+            .join('fields', 'courses.field', 'fields.id')
+            .where('courses.statuscode', 'Available')
+            .limit(pageSize).offset(offset)
+            .select('courses.*', 'users.fullname as author_name', 'fields.name as field_name')
 
         return query
     },
