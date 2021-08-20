@@ -4,6 +4,6 @@ const chatBotController = require('../controllers/chatbot.controller');
 
 router.post('/chatbot', chatBotController.postMessage);
 
-router.get('/webhock', chatBotController.getMessage);
+router.get('/webhook', chatBotController.getMessage);
 
 module.exports = router; 

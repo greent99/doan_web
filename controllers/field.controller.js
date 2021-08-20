@@ -1,23 +1,16 @@
-const userModel = require('../models/user.model')
-const categoryModel = require('../models/category.model')
+const fieldModel = require('../models/field.model')
 
 module.exports = {
-    async profile (req, res) {
-        return res.status(200).json({
-            message: 'oke'
-        })
-    },
-
     async getAll(req, res) {
         const page = req.query.page || 1
         const pageSize = req.query.pageSize || 10
-        const items = await categoryModel.getSizeAll()
+        const items = await fieldModel.getSizeAll()
         const totalItems = items.length
         const totalPages =  Math.ceil(totalItems / pageSize)
-        const categories = await categoryModel.all(page, pageSize)
+        const fields = await fieldModel.all(page, pageSize)
 
         return res.status(200).json({
-            dataRows: categories,
+            dataRows: fields,
             totalItems,
             totalPages,
         })
@@ -25,15 +18,14 @@ module.exports = {
 
     async create(req, res)
     {
-        const {name} = req.body
-        id = await categoryModel.add({name})
-        console.log(id)
+        const {name, categoryid} = req.body
+        id = await fieldModel.add({name, categoryid})
         if(id)
         {
-            const category = await categoryModel.getById(id)
+            const field = await fieldModel.getById(id)
             return res.status(200).json({
                 message: "Add success",
-                category: category
+                field: field
             })
         }
         return res.status(400).json({
@@ -44,25 +36,25 @@ module.exports = {
     async getById (req, res) {
         const id = req.params.id
         
-        const category = await categoryModel.getById(id)
+        const field = await fieldModel.getById(id)
 
-        if(category)
+        if(field)
             return res.status(200).json({
                 message: "Success",
-                category
+                field
             })
         
         return res.status(400).json({
-            message: "Category is not exist"
+            message: "field is not exist"
         })
     },
 
     async update (req, res)
     {
         const id = req.params.id
-        const {name} = req.body
+        const {name, categoryid} = req.body
 
-        if(await categoryModel.update(id, {name}))
+        if(await fieldModel.update(id, {name, categoryid}))
             return res.status(200).json({
                 message: "Update success"
             })
@@ -75,16 +67,16 @@ module.exports = {
     async delete (req, res)
     {
         const id = req.params.id
-        const category = await categoryModel.getById(id)
-        if(category){
-            await categoryModel.delete(id)
+        const field = await fieldModel.getById(id)
+        if(field){
+            await fieldModel.delete(id)
             return res.status(200).json({
                 message: "Delete success"
             })
         }
 
         return res.status(400).json({
-            message: "Category is not exist"
+            message: "field is not exist"
         })
     }
 }
