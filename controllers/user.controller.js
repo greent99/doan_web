@@ -11,7 +11,8 @@ module.exports = {
 
     async getAll(req, res) {
         const page = req.query.page
-        const data = await accountModel.getAll(page)
+        const type = req.query.type
+        const data = await accountModel.getAll(page, type)
         const totalPage = data.length % 10 == 0 ? data.length / 10 : ((data.length /10) + 1)
         return res.status(200).json({
             dataRows:  data,

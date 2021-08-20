@@ -26,6 +26,8 @@ router.post('/:id/checkUserInCourse', courseController.checkUserInCourse)
 
 router.post('/:id/increaseView', courseController.increaseView)
 
+router.delete('/:id/deleteOfTeacher', courseController.deleteOfTeacher)
+
 
 
 

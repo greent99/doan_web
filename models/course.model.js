@@ -13,7 +13,7 @@ module.exports = {
             .limit(pageSize).offset(offset)
     },
 
-    async getSizeAll () {
+    async getSizeAll() {
         return db(table_course)
     },
 
@@ -44,14 +44,15 @@ module.exports = {
 
     // query full text search
     // typeFilter: 0-default, 1-price asc, 2-price desc, 3-have promotion
-    async getCountSearch(keySearch, typeFilter, category)
-    {
+    async getCountSearch(keySearch, typeFilter, category) {
         let query = db(table_course)
-        if(keySearch)
+        if (keySearch)
             query = query.where('name', 'like', `%${keySearch}%`)
-        if(category && category != 'all')
-            query =  query.where('field', category);
-        
+        if (category && category != 'all')
+            query = query.where('field', category);
+        query = query.where('courses.statuscode', 'Available')
+
+
 
         return query
     },
@@ -59,13 +60,14 @@ module.exports = {
     async search(keySearch, pageIndex, pageSize, typeFilter, category) {
         let offset = (pageIndex - 1) * pageSize;
         let query = db(table_course)
-        if(keySearch)
+        console.log(db(table_course).limit(pageSize).offset(offset))
+        if (keySearch)
             query = query.where('courses.name', 'like', `%${keySearch}%`)
-        if(category && category != 'all')
-            query =  query.where('field', category);
-        if(typeFilter === 'priceAsc')
+        if (category && category != 'all')
+            query = query.where('field', category);
+        if (typeFilter === 'priceAsc')
             query.orderBy('price', 'asc')
-        if(typeFilter === 'priceDesc')
+        if (typeFilter === 'priceDesc')
             query.orderBy('price', 'desc')
         query = query
             .join('users', `courses.author`, 'users.id')
@@ -77,84 +79,84 @@ module.exports = {
         return query
     },
 
-    async getTopNewCourse(top){
+    async getTopNewCourse(top) {
         return db(table_course).orderBy('uploaddate', 'desc')
             .join('users', `${table_course}.author`, 'users.id')
             .limit(top)
-            .select('courses.*', 'users.fullname as author_name' )
+            .select('courses.*', 'users.fullname as author_name')
     },
 
     //get 10 most registered courses
-    async getTop10Most(){
+    async getTop10Most() {
         return db(table_user_course)
     },
 
-    async getTopPopular(top){
+    async getTopPopular(top) {
         return db(table_course).orderBy('viewscount', 'desc').
             join('users', `${table_course}.author`, 'users.id')
             .limit(top)
-            .select('courses.*', 'users.fullname as author_name' )
+            .select('courses.*', 'users.fullname as author_name')
     },
 
     //get 3-4 most prominent
-    async getMostProminent()
-    {
+    async getMostProminent() {
         return db.raw(`SELECT count(*), uc.*, cr.* from categories as cr join courses as c on
          cr.id = c.categoryId join user_course as uc on c.id = uc.courseid group by cr.id order by
          count(*) desc limit 4`);
     },
-    
-     async getCourseByCategoryId(categoryId)
-     {
-         return db(table_course).where('categoryId', categoryId);
-     },
 
-    async create(course){
+    async getCourseByCategoryId(categoryId) {
+        return db(table_course).where('categoryId', categoryId);
+    },
+
+    async create(course) {
         return db(table_name).insert(course).returning('id')
-     },
+    },
 
-     async getReviews(id) {
+    async getReviews(id) {
         return db(table_ratings).where('courseid', id).orderBy('createddat', 'desc')
-     },
+    },
 
-     async addReview(id, review)
-     {
-         review.courseid = id
-         return await db(table_ratings).insert(review).returning('id')
-     },
+    async addReview(id, review) {
+        review.courseid = id
+        return await db(table_ratings).insert(review).returning('id')
+    },
 
-     async addToWatchList (id, userid) {
+    async addToWatchList(id, userid) {
         const user_course = await db('user_course').where('userid', userid).where('courseid', id)
-        if(user_course.length > 0)
+        if (user_course.length > 0)
             await db('user_course').where('userid', userid).where('courseid', id)
-                .update({isinwatchlist: true})
+                .update({ isinwatchlist: true })
         else
             await db('user_course').insert({
                 courseid: id,
                 userid,
                 isinwatchlist: true
             })
-     },
+    },
 
-     async addLesson (courseid, lesson) {
+    async addLesson(courseid, lesson) {
         return await db(table_lessons).insert(lesson).returning('id')
-     },
+    },
 
-     async getLesson (courseid) {
-         return db(table_lessons).where('courseid', courseid)
-     },
+    async getLesson(courseid) {
+        return db(table_lessons).where('courseid', courseid)
+    },
 
-     async checkUserInCourse (courseid, userid)
-     {
-         return db(table_user_course).where('userid', userid).where('courseid', courseid)
-     },
+    async checkUserInCourse(courseid, userid) {
+        return db(table_user_course).where('userid', userid).where('courseid', courseid)
+    },
 
-     async increaseView(courseid) {
-         const course = await this.getById(courseid)
-         console.log(course)
-         const totalView = course.viewscount + 1
-         return db(table_course).where('id', courseid).update({
+    async increaseView(courseid) {
+        const course = await this.getById(courseid)
+        console.log(course)
+        const totalView = course.viewscount + 1
+        return db(table_course).where('id', courseid).update({
             viewscount: totalView
-         })
-     }
+        })
+    },
+
+    async deleteOfTeacher(courseid, userid) {
+        return db(table_course).where('id', courseid).where('author', userid).update({statuscode: 'Not Available'})
+    }
 }

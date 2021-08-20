@@ -222,5 +222,16 @@ module.exports = {
         return res.status(200).json({
             dataRows: courses
         })
+    },
+
+    async deleteOfTeacher (req, res) {
+        const id = req.params.id
+        const userid = req.query.userid
+
+        await courseModel.deleteOfTeacher(id, userid)
+
+        return res.status(200).json({
+            message: "Success"
+        })
     }
 }

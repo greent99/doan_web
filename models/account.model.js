@@ -5,10 +5,13 @@ const randomstring = require('randomstring');
 const sendMail = require('../helpers/sendmail.helper')
 
 module.exports = {
-    async getAll (page) {
+    async getAll (page, type) {
         let offset = (page - 1) * 10;
-        const users = await db(table_name).limit(10).offset(offset)
-        return users
+        let query = db(table_name)
+        if(type && type != 'All')
+            query = query.where('userType', type)
+        query = query.limit(10).offset(offset)
+        return query
     },
 
     async singleByEmail(email) {
