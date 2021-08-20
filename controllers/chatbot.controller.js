@@ -1,3 +1,4 @@
+import request from 'request'
 module.exports = {
     async postMessage(req, res) {
         // Parse the request body from the POST
@@ -38,7 +39,7 @@ module.exports = {
     },
     async getMessage(req, res) {
         // Your verify token. Should be a random string.
-        let VERIFY_TOKEN = process.env.MY_VERIFY_FB_TOKEN;
+        let VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
         // Parse the query params
         let mode = req.query['hub.mode'];
@@ -91,7 +92,7 @@ module.exports = {
         // Send the HTTP request to the Messenger Platform
         request({
             "uri": "https://graph.facebook.com/v7.0/me/messages",
-            "qs": { "access_token": process.env.FB_PAGE_TOKEN },
+            "qs": { "access_token": process.env.PAGE_ACCESS_TOKEN },
             "method": "POST",
             "json": request_body
         }, (err, res, body) => {
