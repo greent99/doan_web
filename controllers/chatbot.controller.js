@@ -39,6 +39,7 @@ module.exports = {
     },
     async getMessage(req, res) {
         // Your verify token. Should be a random string.
+        console.log(process.env.VERIFY_TOKEN)
         let VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
         // Parse the query params
